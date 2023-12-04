@@ -16,7 +16,23 @@ Make sure you have the following tools installed:
 ## used tools 
 - RestAssured Lib
 - TestNG Framework
+- POM design pattern is applied  
   
-##E2E Scenario 
-- Create new pet
-- display an existing pet by id
+## E2E Scenario 
+## for pets
+- Create a new pet.
+- Display an existing pet by id.
+- Display all pets by their status.
+- Update an existing pet.
+- Update a pet with form data (name , status).
+- Delete pet by Id
+## for orders
+- Create a new order.
+- Get some order by id.
+- Delete an order by id.
+## for users
+Dataprovider is applied to this part. getting the data from external file
+- Create a new user. (used an external excel sheet to get userdata from)
+- Get some user by its username. 
+- Update some user by its username.
+- Delete a user by its username.
