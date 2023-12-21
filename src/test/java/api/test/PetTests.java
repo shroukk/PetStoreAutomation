@@ -9,7 +9,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import java.util.Collections;
 
-public class PetTests {
+public class PetTests extends BaseTest {
     Pet petPayload;
     Response response;
     @BeforeClass
@@ -27,49 +27,64 @@ public class PetTests {
 
     @Test(priority = 1)
     public void testCreatePet(){
+        logger.info("......Creating Pet......");
+
         response = PetEndPoints.createPet(petPayload);
         String newPetId = response.jsonPath().getString("id");
         petPayload.setPetId(newPetId);
-        response.then().log().all();
         Assert.assertEquals(response.getStatusCode(),200);
+
+        logger.info("......Pet is created......");
+
     }
 
-    @Test(priority = 2)
+    @Test(dependsOnMethods = "testCreatePet")
     public void testGetPetById(){
+        logger.info("......Reading Pet information......");
+
         response = PetEndPoints.getPetById(petPayload.getPetId());
-        response.then().log().all();
         SoftAssert softAssert = new SoftAssert();
         softAssert.assertEquals(response.getStatusCode(),200);
         softAssert.assertEquals(response.jsonPath().getString("id"),petPayload.getPetId());
         softAssert.assertAll();
+        logger.info("......Pet information is displayed......");
+
     }
 
-    @Test(priority = 3)
+    @Test(dependsOnMethods = "testCreatePet")
     public void testGetPetByStatus(){
+        logger.info("......Reading Pets information with specific status......");
+
         response = PetEndPoints.getPetByStatus(petPayload.getStatus());
-        response.then().log().all();
         Assert.assertEquals(response.getStatusCode(),200);
+        logger.info("......Pets information is displayed......");
+
     }
 
 
-    @Test(priority = 4)
+    @Test(dependsOnMethods = "testGetPetById")
     public void testUpdatePet(){
+        logger.info("......Updating Pet information ......");
 
         petPayload.setStatus("pending");
         petPayload.setPhotoUrls(Collections.singletonList("photo.test"));
         response = PetEndPoints.updatePet(petPayload);
-        response.then().log().all();
         SoftAssert softAssert= new SoftAssert();
         softAssert.assertEquals(response.getStatusCode(),200);
         softAssert.assertEquals(response.jsonPath().getString("status"),petPayload.getStatus());
         softAssert.assertEquals(response.jsonPath().get("photoUrls").toString().trim(),petPayload.getPhotoUrls().toString().trim());
         softAssert.assertAll();
 
+        logger.info("...... Pet information is updated ......");
+
+
     }
-    @Test(priority = 5)
+    @Test(dependsOnMethods = "testUpdatePet")
     public void testUpdatePetWithFormData(){
+        logger.info("...... Updating pet information (Name & Status)......");
+
         petPayload.setStatus("sold");
-        petPayload.setName("souzi");
+        petPayload.setName("Souzi");
         response = PetEndPoints.updatePetWithFormData(petPayload.getPetId(),petPayload.getName(), petPayload.getStatus());
         SoftAssert softAssert= new SoftAssert();
         softAssert.assertEquals(response.getStatusCode(),200);
@@ -78,15 +93,22 @@ public class PetTests {
         softAssert.assertEquals(getUpdatedPet.jsonPath().getString("name"),petPayload.getName());
         softAssert.assertAll();
 
+        logger.info("...... Pet information (Name & Status) is updated ......");
+
+
     }
 
-    @Test(priority = 6)
+    @Test(dependsOnMethods = "testUpdatePetWithFormData")
     public void testDeletePetById(){
+        logger.info("...... Deleting pet information ......");
+
         response = PetEndPoints.deletePetById(petPayload.getPetId());
 
         Assert.assertEquals(response.getStatusCode(),200);
         Response getDeletedPet =PetEndPoints.getPetById(petPayload.getPetId());
         Assert.assertEquals(getDeletedPet.getStatusCode(),404);
+
+        logger.info("...... Pet information is deleted ......");
 
     }
 }

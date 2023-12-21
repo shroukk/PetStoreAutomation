@@ -8,7 +8,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-public class OrderTests {
+public class OrderTests extends BaseTest {
     Order orderPayload;
     Response response;
 
@@ -24,11 +24,16 @@ public class OrderTests {
 
     @Test(priority = 1)
     public void testPostOrder(){
+        logger.info("......Creating order......");
         response = OrderEndPoints.createOrder(orderPayload);
         Assert.assertEquals(response.getStatusCode(),200);
+        logger.info("......Order is Created......");
+
     }
-    @Test(priority = 2)
+    @Test(dependsOnMethods = "testPostOrder")
     public void testGetOrderById(){
+        logger.info("......reading order information......");
+
         response = OrderEndPoints.getOrder(orderPayload.getId());
         SoftAssert softAssert = new SoftAssert();
         softAssert.assertEquals(response.getStatusCode(),200);
@@ -37,14 +42,21 @@ public class OrderTests {
         softAssert.assertEquals(response.jsonPath().getString("status"),orderPayload.getStatus());
         softAssert.assertEquals(response.jsonPath().getInt("quantity"),orderPayload.getQuantity());
         softAssert.assertAll();
+        logger.info("......Order information is displayed......");
+
     }
-    @Test(priority = 3)
+    @Test(dependsOnMethods = "testGetOrderById")
     public void testDeleteOrderById(){
+        logger.info("......deleting order information......");
+
         response = OrderEndPoints.deleteOrder(orderPayload.getId());
         SoftAssert softAssert = new SoftAssert();
         softAssert.assertEquals(response.getStatusCode(),200);
         Response getDeletedOrder = OrderEndPoints.getOrder(orderPayload.getId());
         softAssert.assertEquals(getDeletedOrder.getStatusCode(),404);
         softAssert.assertAll();
+
+        logger.info("......Order information is deleted......");
+
     }
 }
