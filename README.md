@@ -16,7 +16,6 @@ Make sure you have the following tools installed:
 ## used tools 
 - RestAssured Lib
 - TestNG Framework
-- POM design pattern is applied  
   
 ## E2E Scenario 
 ## for pets
